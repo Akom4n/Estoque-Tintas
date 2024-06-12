@@ -1,11 +1,12 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PaintInventory implements Serializable {
-    private ArrayList<Paint> paints;
+    private List<Paint> paints;
 
     public PaintInventory() {
-        paints = new ArrayList<>();
+        this.paints = new ArrayList<>();
     }
 
     public void addPaint(Paint paint) {
@@ -13,38 +14,41 @@ public class PaintInventory implements Serializable {
     }
 
     public void removePaint(String name, String color) {
-        paints.removeIf(paint -> paint.getName().equalsIgnoreCase(name) && paint.getColor().equalsIgnoreCase(color));
+        paints.removeIf(p -> p.getName().equals(name) && p.getColor().equals(color));
     }
 
-    public Paint findPaint(String name) {
+    public List<Paint> getAllPaints() {
+        return paints;
+    }
+
+    public Paint findPaintByNameAndColor(String name, String color) {
         for (Paint paint : paints) {
-            if (paint.getName().equalsIgnoreCase(name)) {
+            if (paint.getName().equals(name) && paint.getColor().equals(color)) {
                 return paint;
             }
         }
         return null;
     }
 
-    public ArrayList<Paint> getAllPaints() {
-        return paints;
-    }
-
-    public void updatePaint(String name, int newQuantity) {
-        Paint paint = findPaint(name);
-        if (paint != null) {
-            paint.setQuantity(newQuantity);
+    public List<Paint> getLowStockPaints(int threshold) {
+        List<Paint> lowStockPaints = new ArrayList<>();
+        for (Paint paint : paints) {
+            if (paint.getQuantity() < threshold) {
+                lowStockPaints.add(paint);
+            }
         }
+        return lowStockPaints;
     }
 
     public void saveToFile(String fileName) throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
-            out.writeObject(this);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(this);
         }
     }
 
     public static PaintInventory loadFromFile(String fileName) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
-            return (PaintInventory) in.readObject();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            return (PaintInventory) ois.readObject();
         }
     }
 }
