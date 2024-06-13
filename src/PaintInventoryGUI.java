@@ -176,20 +176,30 @@ public class PaintInventoryGUI {
     }
 
     private void removePaint() {
-        JPanel panel = new JPanel(new GridLayout(2, 2));
-        JTextField nameField = new JTextField(10);
-        JTextField colorField = new JTextField(10);
+        JComboBox<String> paintComboBox = new JComboBox<>();
+        for (Paint paint : inventory.getAllPaints()) {
+            paintComboBox.addItem(paint.getName() + " - " + paint.getColor());
+        }
 
-        panel.add(new JLabel("Nome da Tinta:"));
-        panel.add(nameField);
-        panel.add(new JLabel("Cor da Tinta:"));
-        panel.add(colorField);
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.add(new JLabel("Tinta:"));
+        panel.add(paintComboBox);
 
         int result = JOptionPane.showConfirmDialog(frame, panel, "Remover Tinta", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            String name = nameField.getText();
-            String color = colorField.getText();
-            inventory.removePaint(name, color);
+            String selectedPaint = (String) paintComboBox.getSelectedItem();
+            if (selectedPaint != null) {
+                String[] parts = selectedPaint.split(" - ");
+                String name = parts[0];
+                String color = parts[1];
+                Paint paint = inventory.findPaintByNameAndColor(name, color);
+                if (paint != null) {
+                    inventory.removePaint(paint);
+                    JOptionPane.showMessageDialog(frame, "Tinta removida com sucesso!");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Tinta não encontrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 

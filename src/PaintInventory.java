@@ -17,6 +17,10 @@ public class PaintInventory implements Serializable {
         paints.removeIf(p -> p.getName().equals(name) && p.getColor().equals(color));
     }
 
+    public void removePaint(Paint paint) {
+        paints.remove(paint);
+    }
+
     public List<Paint> getAllPaints() {
         return paints;
     }
